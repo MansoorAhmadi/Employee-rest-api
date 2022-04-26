@@ -1,5 +1,6 @@
 package com.example.employeerestapi.controller;
 
+import com.example.employeerestapi.exceptions.EmployeeNotFoundException;
 import com.example.employeerestapi.model.Employee;
 import com.example.employeerestapi.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,24 +25,24 @@ public class EmployeeController {
         return repository.findAll();
     }
 
-    //HTTP create method
+    //HTTP post method
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Employee createEmployee(@RequestBody Employee employee){
         return repository.save(employee);
     }
 
-    //findById
+    //HTTP get method - findById
     @GetMapping("{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable long id){
-        Employee employee = repository.findById(id).orElseThrow(() -> new RuntimeException("id not found" + id ));
+        Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("id not found" + id ));
         return ResponseEntity.ok(employee);
     }
 
-    //HTTP update method
+    //HTTP put method - update
     @PutMapping("{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable long id, @RequestBody Employee employeeDetails){
-        Employee employee = repository.findById(id).orElseThrow(() -> new RuntimeException("id not found"));
+        Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("id not found"));
 
         //we get the details in parameter and set into the employee object
         employee.setFirstname(employeeDetails.getFirstname());
@@ -55,10 +56,10 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
-    //delete method
+    //HTTP delete method
     @DeleteMapping("{id}")
-    public ResponseEntity<Employee> deleteEmployee(@PathVariable long id){
-        Employee employee = repository.findById(id).orElseThrow(() -> new RuntimeException("id not found"));
+    public ResponseEntity<Employee> deleteEmployeeById(@PathVariable long id){
+        Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("id not found"));
 
         repository.delete(employee);
 
